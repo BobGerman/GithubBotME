@@ -130,7 +130,7 @@
                                         {
                                             "type": "Action.OpenUrl",
                                             "title": "View issue",
-                                            "url": "${html_url}"
+                                            "url": "${dialog_url}"
                                         }
                                     ],
                                     "spacing": "medium"

@@ -35,6 +35,8 @@ class IssuesME {
                 issue.updated_at = issue.updated_at ? new Date(issue.updated_at).toLocaleDateString() : "n/a";
                 issue.closed_at = issue.closed_at ? new Date(issue.closed_at).toLocaleDateString() : "n/a";
                 issue.body = issue.body.length > 100 ? issue.body.substring(0, 100) + "..." : issue.body;
+                issue.dialog_url = 
+                    `https://teams.microsoft.com/l/task/${process.env.TEAMS_APP_ID}?url=${issue.html_url}&height=400&width=600&title=Issue&completionBotId=${process.env.BOT_ID}`;
 
                 previewAttachment.content.tap = {
                     type: "invoke",

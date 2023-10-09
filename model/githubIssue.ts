@@ -29,6 +29,7 @@ export default interface RootObject {
     timeline_url: string;
     performed_via_github_app?: any;
     state_reason?: string;
+    dialog_url?: string;
 }
 
 export interface User {
