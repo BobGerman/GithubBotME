@@ -88,3 +88,4 @@ deploy:
         TEAMS_APP_ID: ${{TEAMS_APP_ID}}
         BOT_ID: ${{BOT_ID}}
         BOT_PASSWORD: ${{SECRET_BOT_PASSWORD}}
+        BOT_ENDPOINT: ${{BOT_ENDPOINT}}
