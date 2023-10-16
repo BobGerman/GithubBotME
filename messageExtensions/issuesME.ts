@@ -18,6 +18,8 @@ class IssuesME {
         query: MessagingExtensionQuery
         ): Promise<MessagingExtensionResponse> {
 
+        const REPO = "https://github.com/pnp/teams-dev-samples";
+
         try {
             const response = await axios.get(
                 `https://api.github.com/repos/pnp/teams-dev-samples/issues`
@@ -32,13 +34,15 @@ class IssuesME {
                 issue.updated_at = issue.updated_at ? new Date(issue.updated_at).toLocaleDateString() : "n/a";
                 issue.closed_at = issue.closed_at ? new Date(issue.closed_at).toLocaleDateString() : "n/a";
                 issue.body = issue.body.length > 100 ? issue.body.substring(0, 100) + "..." : issue.body;
-                issue.dialog_url =
-                    `https://teams.microsoft.com/l/task/${process.env.TEAMS_APP_ID}?url=${process.env.BOT_ENDPOINT}/issueDialog.html&height=400&width=600&title=Issue&completionBotId=${process.env.BOT_ID}`;
-//                    `https://teams.microsoft.com/l/task/${process.env.TEAMS_APP_ID}?url=${issue.html_url}&height=400&width=600&title=Issue&completionBotId=${process.env.BOT_ID}`;
 
-                const templateJson = issue.pull_request ?
-                    require('./IssuesWithPR.json') :
-                    require('./issuesCard.json');
+                // Hack to pass issue URL to a dialog so it can launch a popup window since Github won't
+                // render in the dialog (IFrame)
+                const repoPathTokens = REPO.split("/");
+                const issuePath = `${repoPathTokens[3]}*${repoPathTokens[4]}*issues*${issue.number}`;
+                issue.dialog_url =
+                    `https://teams.microsoft.com/l/task/${process.env.TEAMS_APP_ID}?url=${process.env.BOT_ENDPOINT}/showIssue/${issuePath}&height=400&width=600&title=Issue&completionBotId=${process.env.BOT_ID}`;
+
+                const templateJson = require('./issuesCard.json');
                 const template = new ACData.Template(templateJson);
                 const resultCard = template.expand({
                     $root: issue

@@ -79,6 +79,10 @@ server.get("/api/test", async (req, res) => {
   res.send (200, value);
 });
 
+server.get ("/showIssue/:issuePath", (req, res, next) => {
+  res.redirect('/issueDialog.html?issuePath=' + req.params.issuePath, next);
+});
+
 server.get ("/*", restify.plugins.serveStatic({
   directory: `${__dirname}/public`,
   default: "index.html"
