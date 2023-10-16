@@ -35,7 +35,7 @@ class PullRequestsME {
                 pr.closed_at = pr.closed_at ? new Date(pr.closed_at).toLocaleDateString() : "n/a";
                 pr.body = pr.body.length > 100 ? pr.body.substring(0, 100) + "..." : pr.body;
 
-                // Hack to pass issue URL to a dialog so it can launch a popup window since Github won't
+                // Hack to pass PR URL to a dialog so it can launch a popup window since Github won't
                 // render in the dialog (IFrame)
                 const repoPathTokens = REPO.split("/");
                 const prPath = `${repoPathTokens[3]}*${repoPathTokens[4]}*pull*${pr.number}`;
@@ -51,16 +51,6 @@ class PullRequestsME {
                 const itemAttachment = CardFactory.adaptiveCard(resultCard);
                 let previewAttachment = CardFactory.thumbnailCard(pr.title, [pr.user.avatar_url]);
 
-                // const itemAttachment = CardFactory.heroCard(pr.title);
-                // let previewAttachment = CardFactory.thumbnailCard(pr.title, [pr.user.avatar_url]);
-
-                // previewAttachment.content.tap = {
-                //     type: "invoke",
-                //     value: {    // Values passed to selectItem when an item is selected
-                //         queryType: this.ME_NAME,
-                //         githubPullRequest: pr
-                //     }
-                // };
                 const attachment = { ...itemAttachment, preview: previewAttachment };
                 attachments.push(attachment);
             });
