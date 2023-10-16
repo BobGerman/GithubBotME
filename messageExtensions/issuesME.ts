@@ -27,22 +27,26 @@ class IssuesME {
             const results = response.data.filter(i => i.title.toLowerCase().includes(query.parameters[0].value.toLowerCase()));
             results.forEach((issue: GithubIssue) => {
 
-                const itemAttachment = CardFactory.heroCard(issue.title);
-                let previewAttachment = CardFactory.thumbnailCard(issue.title, [issue.user.avatar_url]);
-
                 // Clean up the value for presentation
                 issue.created_at = new Date(issue.created_at).toLocaleDateString();
                 issue.updated_at = issue.updated_at ? new Date(issue.updated_at).toLocaleDateString() : "n/a";
                 issue.closed_at = issue.closed_at ? new Date(issue.closed_at).toLocaleDateString() : "n/a";
                 issue.body = issue.body.length > 100 ? issue.body.substring(0, 100) + "..." : issue.body;
+                issue.dialog_url =
+                    `https://teams.microsoft.com/l/task/${process.env.TEAMS_APP_ID}?url=${process.env.BOT_ENDPOINT}/issueDialog.html&height=400&width=600&title=Issue&completionBotId=${process.env.BOT_ID}`;
+//                    `https://teams.microsoft.com/l/task/${process.env.TEAMS_APP_ID}?url=${issue.html_url}&height=400&width=600&title=Issue&completionBotId=${process.env.BOT_ID}`;
 
-                previewAttachment.content.tap = {
-                    type: "invoke",
-                    value: {    // Values passed to selectItem when an item is selected
-                        queryType: this.ME_NAME,
-                        githubIssue: issue
-                    }
-                };
+                const templateJson = issue.pull_request ?
+                    require('./IssuesWithPR.json') :
+                    require('./issuesCard.json');
+                const template = new ACData.Template(templateJson);
+                const resultCard = template.expand({
+                    $root: issue
+                });
+
+                const itemAttachment = CardFactory.adaptiveCard(resultCard);
+                let previewAttachment = CardFactory.thumbnailCard(issue.title, [issue.user.avatar_url]);
+
                 const attachment = { ...itemAttachment, preview: previewAttachment };
                 attachments.push(attachment);
             });
@@ -58,29 +62,6 @@ class IssuesME {
         } catch (error) {
             console.log(error);
         }
-    };
-
-    async handleTeamsMessagingExtensionSelectItem (context: TurnContext, selectedValue: any): Promise<MessagingExtensionResponse>  {
-
-        const issue: GithubIssue = selectedValue.githubIssue;
-        const templateJson = issue.pull_request ?
-            require('./IssuesWithPR.json') :
-            require('./issuesCard.json');
-        const template = new ACData.Template(templateJson);
-        const card = template.expand({
-            $root: issue
-        });
-
-        const resultCard = CardFactory.adaptiveCard(card);
-
-        return {
-            composeExtension: {
-                type: "result",
-                attachmentLayout: "list",
-                attachments: [resultCard]
-            }
-        };
-
     };
 
 }

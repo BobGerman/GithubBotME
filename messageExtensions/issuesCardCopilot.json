@@ -10,7 +10,7 @@
                     "type": "TextBlock",
                     "size": "small",
                     "weight": "bolder",
-                    "text": "ISSUE ${number}",
+                    "text": "COPILOT FOUND ISSUE ${number}",
                     "wrap": false
                 },
                 {

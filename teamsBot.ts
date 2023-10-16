@@ -16,13 +16,12 @@ export class TeamsBot extends TeamsActivityHandler {
     super();
   }
 
-  // Message extension Code
-  // Search.
   public async handleTeamsMessagingExtensionQuery(
     context: TurnContext,
     query: MessagingExtensionQuery
   ): Promise<MessagingExtensionResponse> {
 
+    console.log (`handleTeamsMessagingExtensionQuery: ${query.parameters[0].name} for ${query.parameters[0].value} from user ${context.activity.from.name}`);
     switch (query.parameters[0].name) {
       case issuesME.ME_NAME:
         return await issuesME.handleTeamsMessagingExtensionQuery(context, query);
@@ -33,17 +32,4 @@ export class TeamsBot extends TeamsActivityHandler {
     }
   }
 
-  public async handleTeamsMessagingExtensionSelectItem(
-    context: TurnContext,
-    item: any
-  ): Promise<MessagingExtensionResponse> {
-    switch (item.queryType) {
-      case issuesME.ME_NAME:
-        return await issuesME.handleTeamsMessagingExtensionSelectItem(context, item); 
-      case pullRequestME.ME_NAME:
-        return await pullRequestME.handleTeamsMessagingExtensionSelectItem(context, item);
-      default:
-        return null;
-    }
-  }
 }
