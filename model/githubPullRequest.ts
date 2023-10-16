@@ -47,6 +47,7 @@ export default interface RootObject {
   additions: number;
   deletions: number;
   changed_files: number;
+  dialog_url?: string;
 }
 
 export interface Links {

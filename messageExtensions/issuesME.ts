@@ -12,7 +12,7 @@ class IssuesME {
 
     public readonly ME_NAME = "issuesQuery";
 
-    // Get suppliers given a query
+    // Get issues for this query
     async handleTeamsMessagingExtensionQuery (
         context: TurnContext,
         query: MessagingExtensionQuery

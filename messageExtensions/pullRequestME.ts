@@ -12,11 +12,13 @@ class PullRequestsME {
 
     public readonly ME_NAME = "pullRequestsQuery";
 
-    // Get suppliers given a query
+    // Get pull requests for this query
     async handleTeamsMessagingExtensionQuery (
         context: TurnContext,
         query: MessagingExtensionQuery
         ): Promise<MessagingExtensionResponse> {
+
+        const REPO = "https://github.com/pnp/teams-dev-samples";
 
         try {
             const response = await axios.get(
@@ -27,22 +29,38 @@ class PullRequestsME {
             const results = response.data.filter(i => i.title.toLowerCase().includes(query.parameters[0].value.toLowerCase()));
             results.forEach((pr: GithubPullRequest) => {
 
-                const itemAttachment = CardFactory.heroCard(pr.title);
-                let previewAttachment = CardFactory.thumbnailCard(pr.title, [pr.user.avatar_url]);
-
                 // Clean up the value for presentation
                 pr.created_at = new Date(pr.created_at).toLocaleDateString();
                 pr.updated_at = pr.updated_at ? new Date(pr.updated_at).toLocaleDateString() : "n/a";
                 pr.closed_at = pr.closed_at ? new Date(pr.closed_at).toLocaleDateString() : "n/a";
                 pr.body = pr.body.length > 100 ? pr.body.substring(0, 100) + "..." : pr.body;
 
-                previewAttachment.content.tap = {
-                    type: "invoke",
-                    value: {    // Values passed to selectItem when an item is selected
-                        queryType: this.ME_NAME,
-                        githubPullRequest: pr
-                    }
-                };
+                // Hack to pass issue URL to a dialog so it can launch a popup window since Github won't
+                // render in the dialog (IFrame)
+                const repoPathTokens = REPO.split("/");
+                const prPath = `${repoPathTokens[3]}*${repoPathTokens[4]}*pull*${pr.number}`;
+                pr.dialog_url =
+                    `https://teams.microsoft.com/l/task/${process.env.TEAMS_APP_ID}?url=${process.env.BOT_ENDPOINT}/showIssue/${prPath}&height=400&width=600&title=Issue&completionBotId=${process.env.BOT_ID}`;
+
+                const templateJson = require('./pullRequestCard.json');
+                const template = new ACData.Template(templateJson);
+                const resultCard = template.expand({
+                    $root: pr
+                });
+
+                const itemAttachment = CardFactory.adaptiveCard(resultCard);
+                let previewAttachment = CardFactory.thumbnailCard(pr.title, [pr.user.avatar_url]);
+
+                // const itemAttachment = CardFactory.heroCard(pr.title);
+                // let previewAttachment = CardFactory.thumbnailCard(pr.title, [pr.user.avatar_url]);
+
+                // previewAttachment.content.tap = {
+                //     type: "invoke",
+                //     value: {    // Values passed to selectItem when an item is selected
+                //         queryType: this.ME_NAME,
+                //         githubPullRequest: pr
+                //     }
+                // };
                 const attachment = { ...itemAttachment, preview: previewAttachment };
                 attachments.push(attachment);
             });
@@ -58,27 +76,6 @@ class PullRequestsME {
         } catch (error) {
             console.log(error);
         }
-    };
-
-    async handleTeamsMessagingExtensionSelectItem (context: TurnContext, selectedValue: any): Promise<MessagingExtensionResponse>  {
-
-        const pullRequest = selectedValue.githubPullRequest;
-        const templateJson = require('./pullRequestCard.json');
-        const template = new ACData.Template(templateJson);
-        const card = template.expand({
-            $root: pullRequest
-        });
-
-        const resultCard = CardFactory.adaptiveCard(card);
-
-        return {
-            composeExtension: {
-                type: "result",
-                attachmentLayout: "list",
-                attachments: [resultCard]
-            }
-        };
-
     };
 
 }
