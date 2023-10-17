@@ -7,6 +7,9 @@ appPackage/build
 # dependencies
 node_modules/
 
+# Azurite emulator
+_storage_emulator
+
 # misc
 .env
 .deployment

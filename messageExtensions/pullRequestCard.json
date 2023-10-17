@@ -130,7 +130,7 @@
                                         {
                                             "type": "Action.OpenUrl",
                                             "title": "View pull request",
-                                            "url": "${html_url}"
+                                            "url": "${dialog_url}"
                                         }
                                     ],
                                     "spacing": "medium"
