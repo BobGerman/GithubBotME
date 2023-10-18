@@ -11,7 +11,6 @@
                 "Start local tunnel",
                 "Provision",
                 "Deploy",
-                "Start Azurite emulator",
                 "Start application"
             ],
             "dependsOrder": "sequence"
@@ -76,33 +75,6 @@
             "command": "deploy",
             "args": {
                 "env": "local"
-            }
-        },
-        {
-            "label": "Start Azurite emulator",
-            "type": "shell",
-            "command": "npm run storage",
-            "isBackground": true,
-            "problemMatcher": {
-                "pattern": [
-                    {
-                        "regexp": "^.*$",
-                        "file": 0,
-                        "location": 1,
-                        "message": 2
-                    }
-                ],
-                "background": {
-                    "activeOnStart": true,
-                    "beginsPattern": "Azurite",
-                    "endsPattern": "successfully listening"
-                }
-            },
-            "options": {
-                "cwd": "${workspaceFolder}"
-            },
-            "presentation": {
-                "reveal": "silent"
             }
         },
         {

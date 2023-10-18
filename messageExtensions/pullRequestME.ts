@@ -18,8 +18,6 @@ class PullRequestsME {
         query: MessagingExtensionQuery
         ): Promise<MessagingExtensionResponse> {
 
-        const REPO = "https://github.com/pnp/teams-dev-samples";
-
         try {
             const response = await axios.get(
                 `https://api.github.com/repos/pnp/teams-dev-samples/pulls`
@@ -34,13 +32,6 @@ class PullRequestsME {
                 pr.updated_at = pr.updated_at ? new Date(pr.updated_at).toLocaleDateString() : "n/a";
                 pr.closed_at = pr.closed_at ? new Date(pr.closed_at).toLocaleDateString() : "n/a";
                 pr.body = pr.body.length > 100 ? pr.body.substring(0, 100) + "..." : pr.body;
-
-                // Hack to pass PR URL to a dialog so it can launch a popup window since Github won't
-                // render in the dialog (IFrame)
-                const repoPathTokens = REPO.split("/");
-                const prPath = `${repoPathTokens[3]}*${repoPathTokens[4]}*pull*${pr.number}`;
-                pr.dialog_url =
-                    `https://teams.microsoft.com/l/task/${process.env.TEAMS_APP_ID}?url=${process.env.BOT_ENDPOINT}/showIssue/${prPath}&height=400&width=600&title=Issue&completionBotId=${process.env.BOT_ID}`;
 
                 const templateJson = require('./pullRequestCard.json');
                 const template = new ACData.Template(templateJson);

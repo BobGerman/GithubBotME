@@ -9,7 +9,6 @@ import {
   ConfigurationBotFrameworkAuthentication,
   TurnContext,
 } from "botbuilder";
-import configService from "./services/configurationService";
 
 // This bot's main dialog.
 import { TeamsBot } from "./teamsBot";
@@ -63,28 +62,9 @@ server.listen(process.env.port || process.env.PORT || 3978, () => {
   console.log(`\nBot Started, ${server.name} listening to ${server.url}`);
 });
 
-
-
 // Listen for incoming requests.
 server.post("/api/messages", async (req, res) => {
   await adapter.process(req, res, async (context) => {
     await bot.run(context);
   });
 });
-
-server.get("/api/test", async (req, res) => {
-  await configService.SetConfigValue("test", "123");
-  const value = await configService.GetConfigValue("test");
-  console.log (`Retrieved value: ${value}`);
-  res.send (200, value);
-});
-
-server.get ("/showIssue/:issuePath", (req, res, next) => {
-  res.redirect('/issueDialog.html?issuePath=' + req.params.issuePath, next);
-});
-
-server.get ("/*", restify.plugins.serveStatic({
-  directory: `${__dirname}/public`,
-  default: "index.html"
-}));
-
