@@ -7,6 +7,7 @@ import {
     MessagingExtensionResponse
 } from "botbuilder";
 import GithubIssue from "../model/githubIssue";
+import issuesCard from "./issuesCard.json";
 
 class IssuesME {
 
@@ -35,7 +36,7 @@ class IssuesME {
                 issue.closed_at = issue.closed_at ? new Date(issue.closed_at).toLocaleDateString() : "n/a";
                 issue.body = issue.body.length > 100 ? issue.body.substring(0, 100) + "..." : issue.body;
 
-                const templateJson = require('./issuesCard.json');
+                const templateJson = issuesCard;
                 const template = new ACData.Template(templateJson);
                 const resultCard = template.expand({
                     $root: issue

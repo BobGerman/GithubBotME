@@ -7,6 +7,7 @@ import {
     MessagingExtensionResponse
 } from "botbuilder";
 import GithubPullRequest from "../model/githubPullRequest";
+import pullRequestCard from "./pullRequestCard.json";
 
 class PullRequestsME {
 
@@ -33,7 +34,7 @@ class PullRequestsME {
                 pr.closed_at = pr.closed_at ? new Date(pr.closed_at).toLocaleDateString() : "n/a";
                 pr.body = pr.body.length > 100 ? pr.body.substring(0, 100) + "..." : pr.body;
 
-                const templateJson = require('./pullRequestCard.json');
+                const templateJson = pullRequestCard;
                 const template = new ACData.Template(templateJson);
                 const resultCard = template.expand({
                     $root: pr
